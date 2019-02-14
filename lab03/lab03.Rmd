@@ -86,19 +86,19 @@ lines(x = radius * cos(theta), y = radius * sin(theta))
 ## The key point of kernels for SVM
 
 - We've seen we can classify nonlinear data by mapping our space into a higher dimension
+
 - *But,* this can be computationally expensive for every vector in the data
+
 - SVM doesn't need the *actual vectors* transformed to the higher dimensional space to find the optimal hyperplane, it only needs their *dot product*, bypassing expensive calculations of the new dimensions
 
 
 ## Dot product intuition
 
-Recall from lecture, the kernel $k(\mathbf{x}_i, \mathbf{x}_j)$ (function that gives the inner product in the higher dimensional space) is a part of our optimization problem:
+Recall from lecture, the kernel $k(\mathbf{x}_i, \mathbf{x}_j)$ (function that gives the inner product in the higher dimensional space) can replace the inner product in our optimization problem:
 
 $$L(\lambda_i) = \sum_{i=1}^N \lambda_i - \frac{1}{2} \sum_{i,j}^N \lambda_i \lambda_j y_i y_j k(\mathbf{x}_i, \mathbf{x}_j)$$
 
 Recall $\lambda_i$'s are positive, and $L(\lambda)$ will be maximized if we give nonzero values to $\lambda_i$'s that correspond to the support vectors.
-
-So how does the kernal/inner product matter?
 
 
 ## Dot product intuition
