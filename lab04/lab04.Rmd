@@ -1,0 +1,35 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## SVD
+
+```{r cars}
+set.seed(129812)
+X <- data.frame(cbind(rnorm(n = 100, 1, 1), rnorm(n = 100, 15, 3), rnorm(n = 100, -7, 3)))
+X$X4 <- X$X2*2 + rnorm(100, 0, 1)
+
+udv <- svd(X)
+
+recon_X_all <- 
+recon_X_2 <-
+```
+
+
+```{r}
+par(mfrow = c(1,5))
+for(i in 1:ncol(X)){
+    plot(recon_X_all[,i], X[,i])
+}
+
+par(mfrow = c(1,5))
+for(i in 1:ncol(X)){
+    plot(recon_X_2[,i], X[,i])
+}
+```
+
+

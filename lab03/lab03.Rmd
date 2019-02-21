@@ -152,8 +152,8 @@ mod <- svm(Class ~ ., data = d, kernel = 'linear')
 
 \footnotesize
 ```{r, asp = 1, fig.height=5}
-#plot(x = d[,1], y = d[,2], col = ifelse(y == "benign", "blue", "hotpink"))
-#points(t(t(mod$SV) * mod$x.scale[['scaled:scale']] + mod$x.scale[['scaled:center']]), cex = 2)
+plot(x = d[,1], y = d[,2], col = ifelse(d$Class == "benign", "blue", "hotpink"))
+points(t(t(mod$SV) * mod$x.scale[['scaled:scale']] + mod$x.scale[['scaled:center']]), cex = 2)
 plot(mod, d)
 ```
 
