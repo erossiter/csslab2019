@@ -1,0 +1,202 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, root.dir = "~/dropbox/github/csslab/lab05/")
+```
+
+
+# Data
+
+116th Congress (2019-2021)
+
+106th Congress (1999-2001)
+
+96th Congress (1979-1981)
+
+\url{https://voteview.com/data}
+
+Note `party_code` of 100 is Dem, 200 is Rep, and 328 is Ind.
+
+```{r, fig.width=6, fig.height=5}
+x <- read.csv("HS096_members.csv")
+
+r <- rgb(red = 1, green = 0, blue = 0, alpha = .5, maxColorValue = 1)
+b <- rgb(red = 0, green = 0, blue = 1, alpha = .5, maxColorValue = 1)
+g <- rgb(red = 0, green = 1, blue = 0, alpha = .75, maxColorValue = 1)
+
+plot(x = x$nominate_dim1, y = x$nominate_dim2,
+     col = ifelse(x$party_code == 100, r,
+                  ifelse(x$party_code == 200, b, g)),
+     pch = ifelse(x$chamber == "House", 16, 17),
+     cex = 1)
+```
+
+# kmeans
+
+- Find $k$ clusters with hard assignments
+
+
+# Optimization algorithm
+
+What are the steps?
+
+1. Choose random centroids
+
+Do until convergence:
+
+- Update $\tau_i$ -- find closest centroid for each observation
+
+- Update $\theta_k$ -- calculate new centroids
+
+- Update change in objective function
+
+
+# Let's do one iteration
+
+- plot each step
+
+- try to make code generalizable to any $K$ and any dimension of $X$
+
+```{r}
+x <- x[,c("nominate_dim1", "nominate_dim2")]
+```
+
+```{r}
+set.seed(43525)
+K <- 4
+centers <- matrix(NA, nrow = K, ncol = ncol(x))
+for(i in 1:ncol(centers)){
+    centers[,i] <- runif(K, min = min(x[,i]), max = max(x[,i]))
+}
+colnames(centers) <- colnames(x)
+rownames(centers) <- paste0("center", 1:K)
+centers
+```
+
+
+```{r}
+plot(x = x$nominate_dim1, y = x$nominate_dim2,
+     col = "black",
+     cex = 1)
+points(centers, pch = "+", cex = 3, col = 1:K)
+```
+
+```{r}
+new_assign <- rep(NA, nrow(x))
+for(i in 1:nrow(x)){
+    x_i <- x[i, ]
+    dists <- rep(NA, K)
+    for(j in 1:K){
+        dists[j] <- dist(rbind(x_i, centers[j,]))
+    }
+    new_assign[i] <- which.min(dists)    
+}
+```
+
+
+```{r}
+plot(x = x$nominate_dim1, y = x$nominate_dim2,
+     col = new_assign,
+     cex = 1)
+points(centers, pch = "+", cex = 3, col = 1:K)
+```
+
+```{r}
+new_centers <- matrix(NA, nrow = K, ncol = ncol(x))
+for(i in 1:nrow(new_centers)){
+    new_centers[i,] <- colMeans(x[new_assign == i, ])
+}
+```
+
+```{r}
+plot(x = x$nominate_dim1, y = x$nominate_dim2,
+     col = new_assign,
+     cex = 1)
+points(new_centers, pch = "+", cex = 3, col = 1:K)
+```
+
+# Now iterate until convergence
+
+
+```{r}
+calc_loss <- function(x, K, centers){
+    loss <- 0
+    for(i in 1:nrow(x)){
+        x_i <- x[i, ]
+        dists <- rep(NA, K)
+        for(j in 1:K){
+            dists[j] <- dist(rbind(x_i, centers[j,]))
+        }
+        loss <- loss + min(dists)^2
+    } 
+    return(loss)
+}
+
+
+my_kmeans <- function(x, K, max_iter, eps, seed){
+    set.seed(seed)
+    # initialize random centroids
+    centers <- matrix(NA, nrow = K, ncol = ncol(x))
+    for(i in 1:ncol(centers)){
+        centers[,i] <- runif(K, min = min(x[,i]), max = max(x[,i]))
+    }
+    # initial loss
+    # uses t-1 centers and assignments given those centers
+    old_loss <- calc_loss(x = x, K = K, centers = centers)
+    
+    change <- 2*eps
+    iter <- 0
+    while(change > eps & iter < max_iter){
+        
+        # assign each point to closest centroid
+        assign <- rep(NA, nrow(x))
+        for(i in 1:nrow(x)){
+            x_i <- x[i, ]
+            dists <- rep(NA, K)
+            for(j in 1:K){
+                dists[j] <- dist(rbind(x_i, centers[j,]))
+            }
+            assign[i] <- which.min(dists)
+        }
+        
+        # calculate new centroids
+        centers <- matrix(NA, nrow = K, ncol = ncol(x))
+        for(i in 1:nrow(centers)){
+            centers[i,] <- colMeans(x[assign == i, ])
+        }
+        
+        # update change in loss
+        new_loss <- calc_loss(x = x, K = K, centers = centers)
+        change <- old_loss - new_loss
+        old_loss <- new_loss
+        
+        iter <- iter + 1
+    }
+
+    return(list(assignments = assign, centers = centers, n_iter = iter, obj_func = old_loss))
+}
+
+
+out1 <- my_kmeans(x = x, K = 3, max_iter = 100, eps = .001, seed = 1234)
+out2 <- my_kmeans(x = x, K = 3, max_iter = 100, eps = .001, seed = 9873)
+```
+
+```{r, fig.height=6, fig.width=4}
+par(mfrow = c(2,1))
+
+plot(x = x$nominate_dim1, y = x$nominate_dim2,
+     col = out1$assignments,
+     cex = 1)
+points(out1$centers, pch = "+", cex = 3, col = 1:K)
+mtext(text = paste("Obj Func:", out1$obj_func))
+
+plot(x = x$nominate_dim1, y = x$nominate_dim2,
+     col = out2$assignments,
+     cex = 1)
+points(out2$centers, pch = "+", cex = 3, col = 1:K)
+mtext(text = paste("Obj Func:", out2$obj_func))
+```
+```
+

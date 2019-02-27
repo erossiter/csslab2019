@@ -1,0 +1,72 @@
+---
+title: Kmeans
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, root.dir = "~/dropbox/github/csslab/lab05/")
+```
+
+
+# Data
+
+116th Congress (2019-2021)
+
+106th Congress (1999-2001)
+
+96th Congress (1979-1981)
+
+\url{https://voteview.com/data}
+
+Note `party_code` of 100 is Dem, 200 is Rep, and 328 is Ind.
+
+```{r, fig.width=6, fig.height=5}
+x <- read.csv("HS096_members.csv")
+
+r <- rgb(red = 1, green = 0, blue = 0, alpha = .5, maxColorValue = 1)
+b <- rgb(red = 0, green = 0, blue = 1, alpha = .5, maxColorValue = 1)
+g <- rgb(red = 0, green = 1, blue = 0, alpha = .75, maxColorValue = 1)
+
+plot(x = x$nominate_dim1, y = x$nominate_dim2,
+     col = ifelse(x$party_code == 100, r,
+                  ifelse(x$party_code == 200, b, g)),
+     pch = ifelse(x$chamber == "House", 16, 17),
+     cex = 1)
+```
+
+# kmeans
+
+- Find $k$ clusters with hard assignments
+
+
+# Optimization algorithm
+
+What are the steps?
+
+1. Choose random centroids
+
+2. Do until convergence:
+
+    - Update $\tau_i$ -- find closest centroid for each observation
+
+    - Update $\theta_k$ -- calculate new centroids
+
+    - Update change in objective function
+
+
+# Let's code one iteration
+
+- plot each step
+
+- try to make code generalizable to any $K$ and any dimension of $X$
+
+```{r}
+x <- x[,c("nominate_dim1", "nominate_dim2")]
+```
+
+
+
+# Now adapt code to iterate until convergence
+
+
+

@@ -15,13 +15,21 @@ X$X4 <- X$X2*2 + rnorm(100, 0, 1)
 
 udv <- svd(X)
 
-recon_X_all <- 
-recon_X_2 <-
+udv$u
+
+udv$d
+
+udv$v
+
+
+
+recon_X_all <- udv$u %*% diag(udv$d) %*% t(udv$v)
+recon_X_2 <- udv$u[,1:2] %*% diag(udv$d)[1:2, 1:2] %*% t(udv$v)[1:2, ]
 ```
 
 
 ```{r}
-par(mfrow = c(1,5))
+par(mfrow = c(1,4))
 for(i in 1:ncol(X)){
     plot(recon_X_all[,i], X[,i])
 }
