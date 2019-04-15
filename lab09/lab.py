@@ -1,6 +1,6 @@
 # pip install keras
 # pip install tensorflow
-# pip install numpy==1.14
+# pip install numpy==1.14 #if needed
 
 # example from Jason Brownlee's tutorial
 # https://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
@@ -19,13 +19,13 @@ df = numpy.loadtxt("pima-indians-diabetes.csv", delimiter=",")
 # quick aside about numpy arrays
 df.shape # dimensions
 df[:2, 1:3] # subset, remember python indexing!
-df[1, :].shape # ":" grabs everything
+df[1, :] # ":" grabs everything
 diabetes_idx = (df[:,8] == 1) # subset based on criteria
 diabetes_df = df[diabetes_idx,:] # what did I do?
 
 # subset to train/test sets
-test_idx = numpy.random.choice(range(len(df)), size = 500, replace = False)
-train_idx = [i for i in range(len(df)) if i not in test_idx]
+train_idx = numpy.random.choice(range(len(df)), size = 500, replace = False)
+test_idx = [i for i in range(len(df)) if i not in train_idx]
 test_idx.sort()
 train_idx.sort()
 train_x = df[train_idx,0:8]
@@ -45,10 +45,12 @@ model = Sequential()
 #	"12" is the number of "neurons" i.e., ouputs of this layer
 #	"relu" function within the layers... 
 #	Note: default initialization of weights to small number ~ Unif(0, .05) 
-model.add(Dense(12, activation = "relu", input_dim = 8))
+model.add(Dense(3, activation = "relu", input_dim = 8))
 
 # Second layer--HIDDEN
-model.add(Dense(8, activation='relu'))
+model.add(Dense(2, activation='relu'))
+
+# ...
 
 # Third layer--OUTPUT
 #	"sigmoid" to ensure output is mapped to between 0 and 1
